@@ -1,0 +1,23 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.pnp.cjs
+
+# Build Output
+/dist
+/build
+
+# Environment Variables
+.env
+.env.local
+
+# Logs
+logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+.yarn
