@@ -1,43 +1,37 @@
-/* eslint-disable import/first */
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 
+// LLM Model
 const chatModel = new ChatOpenAI({
-  model: "gpt-4o-mini",
+  model: "gpt-4o",
 });
 
-console.log(await chatModel.invoke("what is LangSmith?"));
-
-/*
-  AIMessage {
-    content: 'Langsmith can help with testing by generating test cases, automating the testing process, and analyzing test results.',
-    name: undefined,
-    additional_kwargs: { function_call: undefined, tool_calls: undefined }
-  }
-*/
-
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-
+// Prompt
 const prompt = ChatPromptTemplate.fromMessages([
   ["system", "You are a world class technical documentation writer."],
   ["user", "{input}"],
 ]);
 
-const chain = prompt.pipe(chatModel);
-
-console.log(
-  await chain.invoke({
-    input: "what is LangSmith?",
-  })
-);
-
-import { StringOutputParser } from "@langchain/core/output_parsers";
-
+// Parser
 const outputParser = new StringOutputParser();
 
-const llmChain = prompt.pipe(chatModel).pipe(outputParser);
+// Chaining
 
+const chain = prompt.pipe(chatModel).pipe(outputParser);
+
+// invoke
 console.log(
-  await llmChain.invoke({
-    input: "what is LangSmith?",
+  await chain.invoke({
+    input: "langsmith가 뭐야?",
   })
 );
+
+// streaming
+const chucks = [];
+for await (const chuck of await chain.stream({ input: "langsmith가 뭐야?" })) {
+  chucks.push(chuck);
+  console.log(`${chuck}\n`);
+}
+
+console.log(chucks.join(""));
