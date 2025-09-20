@@ -17,7 +17,6 @@ const prompt = ChatPromptTemplate.fromMessages([
 const outputParser = new StringOutputParser();
 
 // Chaining
-
 const chain = prompt.pipe(chatModel).pipe(outputParser);
 
 // invoke
