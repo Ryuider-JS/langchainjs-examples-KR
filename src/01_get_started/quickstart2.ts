@@ -17,7 +17,7 @@ const llm = new ChatOpenAI({
 
 // Document Loader
 const loader = new CheerioWebBaseLoader(
-  "https://docs.smith.langchain.com/user_guide"
+  "https://docs.langchain.com/langsmith/evaluation-quickstart"
 );
 
 /**
@@ -27,9 +27,9 @@ const loader = new CheerioWebBaseLoader(
 const docs = await loader.load();
 // const scrape = await loader.scrape();
 
-// console.log(docs.length);
-// console.log(docs[0]);
-// console.log(docs[0].pageContent.length);
+// console.log("docs length \n", docs.length);
+// console.log("docs[0] \n", docs[0]);
+// console.log("docs[0].pageContent.length \n", docs[0].pageContent.length);
 
 /**
  * ### RecursiveCharacterTextSplitterParams
@@ -43,9 +43,9 @@ const splitter = new RecursiveCharacterTextSplitter();
 
 const splitDocs = await splitter.splitDocuments(docs);
 
-// console.log(splitDocs);
-// console.log(splitDocs.length);
-// console.log(splitDocs[0].pageContent.length);
+// console.log("splitDocs \n", splitDocs);
+// console.log("splitDocs.length \n", splitDocs.length);
+// console.log("splitDocs[0].pageContent.length \n"splitDocs[0].pageContent.length);
 
 // Embedding Model
 const embeddings = new OpenAIEmbeddings();
@@ -70,85 +70,93 @@ const documentChain = await createStuffDocumentsChain({
   prompt,
 });
 
-// console.log(documentChain);
-
-console.log(
-  await documentChain.invoke({
-    input: "LangSmith가 뭐야?",
-    context: [
-      new Document({
-        pageContent:
-          "LangSmith is a platform for building production-grade LLM applications.",
-      }),
-    ],
-  })
-);
-
-// const retriever = vectorstore.asRetriever();
-
-// const retrievalChain = await createRetrievalChain({
-//   combineDocsChain: documentChain,
-//   retriever,
-// });
+// console.log("documentChain \n", documentChain);
 
 // console.log(
+//   "documentChain invoke result \n",
+//   await documentChain.invoke({
+//     input: "LangSmith가 뭐야?",
+//     context: [
+//       new Document({
+//         pageContent:
+//           "LangSmith is a platform for building production-grade LLM applications.",
+//       }),
+//     ],
+//   })
+// );
+
+const retriever = vectorstore.asRetriever();
+
+const retrievalChain = await createRetrievalChain({
+  combineDocsChain: documentChain,
+  retriever,
+});
+
+// console.log(
+//   "retrievalChain invoke result \n",
 //   await retrievalChain.invoke({
 //     input: "what is LangSmith?",
 //   })
 // );
 
-// const historyAwarePrompt = ChatPromptTemplate.fromMessages([
-//   new MessagesPlaceholder("chat_history"),
-//   ["user", "{input}"],
-//   [
-//     "user",
-//     "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation",
-//   ],
-// ]);
+/**
+ * chat_history에 이전 대화 내역을 같이 prompt로 삽입
+ * 이후 user input 이 들어오면
+ * 해당 내용과 함께 user의 프롬프트를 기반으로 유사한 검색 쿼리를 vector store에서 retriving
+ */
+const historyAwarePrompt = ChatPromptTemplate.fromMessages([
+  new MessagesPlaceholder("chat_history"),
+  ["user", "{input}"],
+  [
+    "user",
+    "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation",
+  ],
+]);
 
-// const historyAwareRetrieverChain = await createHistoryAwareRetriever({
-//   llm: chatModel,
-//   retriever,
-//   rephrasePrompt: historyAwarePrompt,
-// });
+const historyAwareRetrieverChain = await createHistoryAwareRetriever({
+  llm,
+  retriever,
+  rephrasePrompt: historyAwarePrompt,
+});
 
-// const chatHistory = [
-//   new HumanMessage("Can LangSmith help test my LLM applications?"),
-//   new AIMessage("Yes!"),
-// ];
+const chatHistory = [
+  new HumanMessage("Can LangSmith help test my LLM applications?"),
+  new AIMessage("Yes!"),
+];
 
 // console.log(
+//   "historyAwareRetrieverChain invoke result \n",
 //   await historyAwareRetrieverChain.invoke({
 //     chat_history: chatHistory,
 //     input: "Tell me how!",
 //   })
 // );
 
-// const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
-//   [
-//     "system",
-//     "Answer the user's questions based on the below context:\n\n{context}",
-//   ],
-//   new MessagesPlaceholder("chat_history"),
-//   ["user", "{input}"],
-// ]);
+const historyAwareRetrievalPrompt = ChatPromptTemplate.fromMessages([
+  [
+    "system",
+    "Answer the user's questions based on the below context:\n\n{context}",
+  ],
+  new MessagesPlaceholder("chat_history"),
+  ["user", "{input}"],
+]);
 
-// const historyAwareCombineDocsChain = await createStuffDocumentsChain({
-//   llm: chatModel,
-//   prompt: historyAwareRetrievalPrompt,
-// });
+const historyAwareCombineDocsChain = await createStuffDocumentsChain({
+  llm,
+  prompt: historyAwareRetrievalPrompt,
+});
 
-// const conversationalRetrievalChain = await createRetrievalChain({
-//   retriever: historyAwareRetrieverChain,
-//   combineDocsChain: historyAwareCombineDocsChain,
-// });
+const conversationalRetrievalChain = await createRetrievalChain({
+  retriever: historyAwareRetrieverChain,
+  combineDocsChain: historyAwareCombineDocsChain,
+});
 
-// const result2 = await conversationalRetrievalChain.invoke({
-//   chat_history: [
-//     new HumanMessage("Can LangSmith help test my LLM applications?"),
-//     new AIMessage("Yes!"),
-//   ],
-//   input: "tell me how",
-// });
+const result2 = await conversationalRetrievalChain.invoke({
+  chat_history: [
+    new HumanMessage("Can LangSmith help test my LLM applications?"),
+    new AIMessage("Yes!"),
+  ],
+  input: "tell me how",
+});
 
-// console.log(result2.answer);
+console.log(result2.answer);
