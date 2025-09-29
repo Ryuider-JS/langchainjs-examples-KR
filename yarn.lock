@@ -722,6 +722,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@langchain/tavily@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "@langchain/tavily@npm:0.1.5"
+  dependencies:
+    zod: ^3.25.32
+  peerDependencies:
+    "@langchain/core": ">=0.3.58 <0.4.0"
+  checksum: 8b03acf2f19dafa5c3cd85fb9cd351ce8cbf16cd251e0fb4e6d0d3e231fcf1f1dac617c245755e860bce63f935683f342225a9e127431e691e411b5c809186f0
+  languageName: node
+  linkType: hard
+
 "@langchain/textsplitters@npm:>=0.0.0 <0.2.0":
   version: 0.1.0
   resolution: "@langchain/textsplitters@npm:0.1.0"
@@ -3218,6 +3229,7 @@ __metadata:
     "@langchain/community": ^0.3.56
     "@langchain/core": ^0.3.77
     "@langchain/openai": ^0.6.13
+    "@langchain/tavily": ^0.1.5
     "@tsconfig/recommended": ^1.0.2
     "@types/js-yaml": ^4
     "@types/node": ^24.5.2
@@ -3236,6 +3248,7 @@ __metadata:
     prettier: ^2.8.3
     tsx: ^3.12.3
     typescript: ~5.1.6
+    zod: ^4.1.11
   languageName: unknown
   linkType: soft
 
@@ -4941,5 +4954,12 @@ __metadata:
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: c9a403a62b329188a5f6bd24d5d935d2bba345f7ab8151d1baa1505b5da9f227fb139354b043711490c798e91f3df75991395e40142e6510a4b16409f302b849
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.1.11":
+  version: 4.1.11
+  resolution: "zod@npm:4.1.11"
+  checksum: 022d59f85ebe054835fbcdc96a93c01479a64321104f846cb5644812c91e00d17ae3479f823956ec9b04e4351dd32841e1f12c567e81bc43f6e21ef5cc02ce3c
   languageName: node
   linkType: hard

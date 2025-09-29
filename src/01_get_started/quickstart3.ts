@@ -6,7 +6,7 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { Document } from "@langchain/core/documents";
 import { createRetrieverTool } from "langchain/tools/retriever";
-import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { TavilySearch } from "@langchain/tavily";
 import { pull } from "langchain/hub";
 import { createOpenAIFunctionsAgent, AgentExecutor } from "langchain/agents";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
@@ -18,7 +18,7 @@ const chatModel = new ChatOpenAI({
 const embeddings = new OpenAIEmbeddings({});
 
 const loader = new CheerioWebBaseLoader(
-  "https://docs.smith.langchain.com/user_guide"
+  "https://docs.langchain.com/langsmith/evaluation-quickstart"
 );
 
 const docs = await loader.load();
@@ -72,7 +72,7 @@ const retrieverTool = await createRetrieverTool(retriever, {
     "Search for information about LangSmith. For any questions about LangSmith, you must use this tool!",
 });
 
-const searchTool = new TavilySearchResults();
+const searchTool = new TavilySearch();
 
 const tools = [retrieverTool, searchTool];
 
